@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Check Admission Status</title>
+</head>
+<body>
+
+    <h1>Student Admission Status</h1>
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Status</th>
+        </tr>
+
+        {% for student in students %}
+        <tr>
+            <td>{{ student.id }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.course }}</td>
+            <td>{{ student.status }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No students found</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br>
+
+    <a href="/">Admission Form</a>
+    <br><br>
+    <a href="/dashboard/">Dashboard</a>
+
+</body>
+</html>
+def student_detail(request, id):
+    student = get_object_or_404(
+        Student,
+        id=id
+    )
+
+    return render(
+        request,
+        'admission/student_detail.html',
+        {'student': student}
+    )

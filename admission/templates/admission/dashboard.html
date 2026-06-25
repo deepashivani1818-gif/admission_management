@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Admission Dashboard</title>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4">
+
+
+<h1 class="text-center mb-4">
+    Admission Dashboard
+</h1>
+
+<form method="GET" class="mb-3">
+
+    <input
+        type="text"
+        name="q"
+        placeholder="Search Student Name"
+        class="form-control"
+    >
+
+    <br>
+
+    <button class="btn btn-primary">
+        Search
+    </button>
+
+</form>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h4>Total Students: {{ students|length }}</h4>
+    </div>
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Course</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Status</th>
+            <th>Fees Amount</th>
+            <th>Fees Paid</th>
+            <th>Balance</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    {% for student in students %}
+    <tr>
+
+        <td>{{ student.id }}</td>
+
+        <td>
+            <a href="/student/{{ student.id }}/">
+                {{ student.name }}
+            </a>
+        </td>
+
+        <td>{{ student.course }}</td>
+        <td>{{ student.email }}</td>
+        <td>{{ student.phone }}</td>
+
+        <td>
+
+            {% if student.status == "Approved" %}
+                <span class="badge bg-success">
+                    Approved
+                </span>
+
+            {% elif student.status == "Rejected" %}
+                <span class="badge bg-danger">
+                    Rejected
+                </span>
+
+            {% else %}
+                <span class="badge bg-warning text-dark">
+                    Pending
+                </span>
+
+            {% endif %}
+
+        </td>
+
+        <td>{{ student.fees_amount }}</td>
+        <td>{{ student.fees_paid }}</td>
+        <td>{{ student.fees_balance }}</td>
+
+        <td>
+           <a href="/edit/{{ student.id }}/">
+               EDIT 
+           </a>
+            <a href="/status/{{ student.id }}/Approved/"
+               class="btn btn-success btn-sm">
+               Approve
+            </a>
+
+            <a href="/status/{{ student.id }}/Rejected/"
+               class="btn btn-danger btn-sm">
+               Reject
+            </a>
+
+            <a href="/delete/{{ student.id }}/"
+               class="btn btn-dark btn-sm">
+               Delete
+            </a>
+
+        </td>
+
+    </tr>
+
+    {% empty %}
+
+    <tr>
+        <td colspan="10" class="text-center">
+            No Students Found
+        </td>
+    </tr>
+
+    {% endfor %}
+
+    </tbody>
+
+</table>
+
+<a href="/" class="btn btn-primary">
+    Add New Student
+</a>
+
+
+</div>
+
+</body>
+</html>
