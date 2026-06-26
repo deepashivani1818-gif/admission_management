@@ -16,8 +16,8 @@ def dashboard(request):
 def update_status(request, student_id, status):
     student = get_object_or_404(Student, id=student_id)
     student.status = status
-        student.save()
-        return redirect('dashboard')
+    student.save()
+    return redirect('dashboard')
 
 def check_status(request):
     students = Student.objects.all()
@@ -31,19 +31,19 @@ def download_receipt(request, id):
     student = get_object_or_404(Student, id=id)
 
 
-response = HttpResponse(content_type='application/pdf')
-response['Content-Disposition'] = f'attachment; filename="receipt_{student.id}.pdf"'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="receipt_{student.id}.pdf"'
 
-p = canvas.Canvas(response)
+    p = canvas.Canvas(response)
 
-p.drawString(100, 800, "ADMISSION RECEIPT")
-p.drawString(100, 760, f"ID: {student.id}")
-p.drawString(100, 740, f"Name: {student.name}")
-p.drawString(100, 720, f"Course: {student.course}")
-p.drawString(100, 700, f"Email: {student.email}")
-p.drawString(100, 680, f"Phone: {student.phone}")
+    p.drawString(100, 800, "ADMISSION RECEIPT")
+    p.drawString(100, 760, f"ID: {student.id}")
+    p.drawString(100, 740, f"Name: {student.name}")
+    p.drawString(100, 720, f"Course: {student.course}")
+    p.drawString(100, 700, f"Email: {student.email}")
+    p.drawString(100, 680, f"Phone: {student.phone}")
 
-p.save()
+    p.save()
 
     return response
 
@@ -51,13 +51,13 @@ p.save()
 def delete_student(request, id):
     student = get_object_or_404(Student, id=id)
     student.delete()
-        return redirect('dashboard')
+    return redirect('dashboard')
 
 def edit_student(request, id):
     student = get_object_or_404(Student, id=id)
 
 
-if request.method == 'POST':
+    if request.method == 'POST':
         student.name = request.POST.get('name')
         student.email = request.POST.get('email')
         student.phone = request.POST.get('phone')
