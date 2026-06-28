@@ -14,6 +14,7 @@ urlpatterns = [
         views.success,
         name='success'
     ),
+      
 
     path(
         'dashboard/',
@@ -52,7 +53,6 @@ path(
 views.edit_student,
 name='edit_student'
 ),
-
 
 
 ]

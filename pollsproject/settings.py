@@ -2,11 +2,12 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-change-this-key'
+SECRET_KEY = 'django-insecure-change-this-to-your-own-secret-key'
 
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+
 
 INSTALLED_APPS = [
     'admission',
@@ -19,6 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -29,7 +31,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 ROOT_URLCONF = 'pollsproject.urls'
+
 
 TEMPLATES = [
     {
@@ -46,7 +50,9 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'pollsproject.wsgi.application'
+
 
 DATABASES = {
     'default': {
@@ -54,6 +60,7 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -70,6 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'Asia/Kolkata'
@@ -78,8 +86,16 @@ USE_I18N = True
 
 USE_TZ = True
 
+
 STATIC_URL = 'static/'
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/accounts/login/'

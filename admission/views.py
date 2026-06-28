@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
@@ -8,10 +9,32 @@ def admission_form(request):
 
 def success(request):
     return render(request, 'admission/success.html')
-
+@login_required
 def dashboard(request):
-    students = Student.objects.all()
-    return render(request, 'admission/dashboard.html', {'students': students})
+    q = request.GET.get('q')
+
+    if q:
+        students = Student.objects.filter(name__icontains=q)
+    else:
+        students = Student.objects.all()
+
+    total = Student.objects.count()
+    approved = Student.objects.filter(status="Approved").count()
+    rejected = Student.objects.filter(status="Rejected").count()
+    pending = Student.objects.filter(status="Pending").count()
+
+    return render(
+        request,
+        'admission/dashboard.html',
+        {
+            'students': students,
+            'total': total,
+            'approved': approved,
+            'rejected': rejected,
+            'pending': pending,
+        }
+    )
+
 
 def update_status(request, student_id, status):
     student = get_object_or_404(Student, id=student_id)
@@ -71,4 +94,3 @@ def edit_student(request, id):
     'admission/edit_student.html',
     {'student': student}
 )
-

@@ -1,4 +1,4 @@
-```python
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
@@ -193,4 +193,4 @@ def generate_pdf(request, student_id):
     pdf.save()
 
     return response
-```
+
