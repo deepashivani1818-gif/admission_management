@@ -3,11 +3,13 @@ from . import views
 
 urlpatterns = [
 
+    path('', views.login_view, name='login'),
+    
     path(
-        '',
-        views.admission_form,
-        name='admission_form'
-    ),
+    'admission/',
+    views.admission_form,
+    name='admission_form'
+),
 
     path(
         'success/',

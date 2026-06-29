@@ -1,17 +1,41 @@
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 from .models import Student
 
+
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("admission_form")
+        else:
+            return render(request, "admission/login.html", {
+                "error": "Invalid Username or Password"
+            })
+
+    return render(request, "admission/login.html")
+
+
+@login_required
 def admission_form(request):
-    return render(request, 'form.html')
+    return render(request, "form.html")
+
 
 def success(request):
-    return render(request, 'admission/success.html')
+    return render(request, "admission/success.html")
+
+
 @login_required
 def dashboard(request):
-    q = request.GET.get('q')
+    q = request.GET.get("q")
 
     if q:
         students = Student.objects.filter(name__icontains=q)
@@ -25,14 +49,14 @@ def dashboard(request):
 
     return render(
         request,
-        'admission/dashboard.html',
+        "admission/dashboard.html",
         {
-            'students': students,
-            'total': total,
-            'approved': approved,
-            'rejected': rejected,
-            'pending': pending,
-        }
+            "students": students,
+            "total": total,
+            "approved": approved,
+            "rejected": rejected,
+            "pending": pending,
+        },
     )
 
 
@@ -40,22 +64,24 @@ def update_status(request, student_id, status):
     student = get_object_or_404(Student, id=student_id)
     student.status = status
     student.save()
-    return redirect('dashboard')
+    return redirect("dashboard")
+
 
 def check_status(request):
     students = Student.objects.all()
-    return render(request, 'admission/check_status.html', {'students': students})
+    return render(request, "admission/check_status.html", {"students": students})
+
 
 def student_detail(request, id):
     student = get_object_or_404(Student, id=id)
-    return render(request, 'admission/student_detail.html', {'student': student})
+    return render(request, "admission/student_detail.html", {"student": student})
+
 
 def download_receipt(request, id):
     student = get_object_or_404(Student, id=id)
 
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="receipt_{student.id}.pdf"'
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="receipt_{student.id}.pdf"'
 
     p = canvas.Canvas(response)
 
@@ -74,23 +100,23 @@ def download_receipt(request, id):
 def delete_student(request, id):
     student = get_object_or_404(Student, id=id)
     student.delete()
-    return redirect('dashboard')
+    return redirect("dashboard")
+
 
 def edit_student(request, id):
     student = get_object_or_404(Student, id=id)
 
-
-    if request.method == 'POST':
-        student.name = request.POST.get('name')
-        student.email = request.POST.get('email')
-        student.phone = request.POST.get('phone')
-        student.course = request.POST.get('course')
+    if request.method == "POST":
+        student.name = request.POST.get("name")
+        student.email = request.POST.get("email")
+        student.phone = request.POST.get("phone")
+        student.course = request.POST.get("course")
 
         student.save()
-        return redirect('dashboard')
+        return redirect("dashboard")
 
     return render(
-    request,
-    'admission/edit_student.html',
-    {'student': student}
-)
+        request,
+        "admission/edit_student.html",
+        {"student": student},
+    )
