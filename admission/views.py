@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from reportlab.pdfgen import canvas
+
 from .models import Student
+from .forms import StudentForm
 
 
 def login_view(request):
@@ -17,16 +19,29 @@ def login_view(request):
             login(request, user)
             return redirect("admission_form")
         else:
-            return render(request, "admission/login.html", {
-                "error": "Invalid Username or Password"
-            })
+            return render(
+                request,
+                "admission/login.html",
+                {"error": "Invalid Username or Password"},
+            )
 
     return render(request, "admission/login.html")
 
 
-@login_required
 def admission_form(request):
-    return render(request, "form.html")
+    if request.method == "POST":
+        form = StudentForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            form.save()
+            return redirect("success")
+        else:
+            print(form.errors)
+
+    else:
+        form = StudentForm()
+
+    return render(request, "admission/form.html", {"form": form})
 
 
 def success(request):
@@ -60,6 +75,7 @@ def dashboard(request):
     )
 
 
+@login_required
 def update_status(request, student_id, status):
     student = get_object_or_404(Student, id=student_id)
     student.status = status
@@ -69,54 +85,74 @@ def update_status(request, student_id, status):
 
 def check_status(request):
     students = Student.objects.all()
-    return render(request, "admission/check_status.html", {"students": students})
+    return render(
+        request,
+        "admission/check_status.html",
+        {"students": students},
+    )
 
 
 def student_detail(request, id):
     student = get_object_or_404(Student, id=id)
-    return render(request, "admission/student_detail.html", {"student": student})
+    return render(
+        request,
+        "admission/student_detail.html",
+        {"student": student},
+    )
 
 
 def download_receipt(request, id):
     student = get_object_or_404(Student, id=id)
 
     response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = f'attachment; filename="receipt_{student.id}.pdf"'
+    response["Content-Disposition"] = (
+        f'attachment; filename="receipt_{student.id}.pdf"'
+    )
 
     p = canvas.Canvas(response)
+    p.setTitle("Admission Receipt")
 
-    p.drawString(100, 800, "ADMISSION RECEIPT")
-    p.drawString(100, 760, f"ID: {student.id}")
-    p.drawString(100, 740, f"Name: {student.name}")
-    p.drawString(100, 720, f"Course: {student.course}")
-    p.drawString(100, 700, f"Email: {student.email}")
-    p.drawString(100, 680, f"Phone: {student.phone}")
+    p.drawString(100, 800, "STUDENT ADMISSION RECEIPT")
+    p.drawString(100, 770, f"Student ID : {student.id}")
+    p.drawString(100, 750, f"Name       : {student.name}")
+    p.drawString(100, 730, f"Course     : {student.course}")
+    p.drawString(100, 710, f"Email      : {student.email}")
+    p.drawString(100, 690, f"Phone      : {student.phone}")
+    p.drawString(100, 670, f"Status     : {student.status}")
 
     p.save()
-
     return response
 
 
+@login_required
 def delete_student(request, id):
     student = get_object_or_404(Student, id=id)
     student.delete()
     return redirect("dashboard")
 
 
+@login_required
 def edit_student(request, id):
     student = get_object_or_404(Student, id=id)
 
     if request.method == "POST":
-        student.name = request.POST.get("name")
-        student.email = request.POST.get("email")
-        student.phone = request.POST.get("phone")
-        student.course = request.POST.get("course")
+        form = StudentForm(
+            request.POST,
+            request.FILES,
+            instance=student,
+        )
 
-        student.save()
-        return redirect("dashboard")
+        if form.is_valid():
+            form.save()
+            return redirect("dashboard")
+    else:
+        form = StudentForm(instance=student)
 
     return render(
         request,
         "admission/edit_student.html",
-        {"student": student},
+        {
+            "form": form,
+            "student": student,
+        },
     )

@@ -12,7 +12,7 @@ class Student(models.Model):
     mother_name = models.CharField(max_length=100)
     dob = models.DateField()
     gender = models.CharField(max_length=20)
-
+    marksheet = models.FileField(upload_to='marksheets/', null=True, blank=True)
     status = models.CharField(
         max_length=20,
         default="Pending"

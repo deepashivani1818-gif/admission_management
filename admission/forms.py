@@ -15,4 +15,5 @@ class StudentForm(forms.ModelForm):
             'mother_name',
             'dob',
             'gender',
+            'marksheet',
         ]
